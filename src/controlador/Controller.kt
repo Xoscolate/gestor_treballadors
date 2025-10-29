@@ -29,10 +29,11 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
 
             } else if (eleccion == "D") {
                 pagarTreballador()
-            }else if (eleccion == "E") {
+            } else if (eleccion == "E") {
                 crearSeu()
-        }
-            else {
+            } else if (eleccion == "G") {
+                veureSeu()
+            } else {
                 vista.showMessage("Esa opcion no exsiste")
 
             }
@@ -271,12 +272,12 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
                             trabajadorModifcar.jornadaCompleta = tipoJornada
                         }
 
-                    }else if (eleccion == "6"){
+                    } else if (eleccion == "6") {
                         var nombreSeu = buscarPorSeu(nif)
-                        vista.showMessage("Actualmente esta en: "+nombreSeu)
+                        vista.showMessage("Actualmente esta en: " + nombreSeu)
                         vista.showMessage("Desea cambiarlo?")
                         var respuesta = vista.strings()
-                        if ( respuesta != "si" && respuesta != "no") {
+                        if (respuesta != "si" && respuesta != "no") {
                             throw exceptions("La respuesta solo puede ser si o no")
                         } else if (respuesta == "si") {
                             vista.showMessage("")
@@ -285,10 +286,10 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
                             vista.showMessage("")
                             vista.showMessage("Dime cual quieres cambiar (indicar por el nombre):")
                             var nombreSeu = vista.strings()
-                            if(!exsisteSeu(nombreSeu)){
+                            if (!exsisteSeu(nombreSeu)) {
                                 throw exceptions("Ese seu no exsiste actualmente")
                             }
-                            if(cantidadSeus(nombreSeu)){
+                            if (cantidadSeus(nombreSeu)) {
                                 throw exceptions("Ahora mimso el seu esta completo")
                             }
 
@@ -302,7 +303,7 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
                             vista.showMessage("")
                             vista.showMessage("Creado correctamente")
 
-                        }else{
+                        } else {
                             vista.showMessage("")
                         }
                     }
@@ -347,7 +348,6 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
     }
 
 
-
     fun cantidadSeus(seu: String): Boolean {
         var cantidad = 0
         var completo = false
@@ -376,8 +376,7 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
     }
 
 
-
-    fun buscarPorSeu (nif : String) : String{
+    fun buscarPorSeu(nif: String): String {
         var nombreSeu = ""
         for (s in llistaSeus) {
             for (n in s.nifsTreballadors) {
@@ -515,6 +514,7 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
         return exsiste
     }
 
+
     fun crearSeu() {
         var salir = false
         while (!salir) {
@@ -568,5 +568,77 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
         }
     }
 
+    fun ahiSeu(): Boolean {
+        var exsisteSeu = true
+        if (llistaSeus.isEmpty()) {
+            exsisteSeu = false
+        }
+        return exsisteSeu
+    }
 
+    fun veureSeu() {
+        var salir = false
+        while (!salir) {
+            try {
+                if (!ahiSeu()) {
+                    vista.showMessage("No hay seus ahora mismo.")
+                    salir = true
+
+                } else {
+                    vista.listaDeSeus()
+                    vista.showMessage("Escoge el seu:")
+                    var seleccionSeu = vista.strings().lowercase()
+                    if(!exsisteSeu(seleccionSeu)){
+                        throw exceptions("Este seu no exsiste")
+                    }
+
+                    var seuNuevo: Seus? = null
+
+                    for (s in llistaSeus) {
+                        if (s.nomSeu == seleccionSeu) {
+                            seuNuevo = s
+                        }
+                    }
+                    if (seuNuevo != null) {
+                        vista.vistaSeu(seuNuevo,treballadors)
+
+                    } else {
+                        throw exceptions("No exsiste este seu")
+                    }
+
+                    vista.showMessage("Desea mirar otro seu")
+                    var respuesta = vista.strings().lowercase()
+                    if (respuesta != "si" && respuesta != "no") {
+
+                        vista.showMessage("Error de respuesta, saliendo...")
+                        salir = true
+                    } else if (respuesta == "si") {
+                        vista.showMessage("Perfecto.")
+                    } else {
+                        vista.showMessage("Saliendo...")
+                        salir = true
+                    }
+                }
+
+            } catch (e: exceptions) {
+                println("Error de datos: ${e.message}")
+                println("Desea reiniciar la observacion de seus? ")
+                val respuesta = scanner.nextLine().lowercase()
+                if (respuesta == "si") {
+                    salir = false
+                } else {
+                    println("saliendo...")
+                    salir = true
+                }
+            } catch (e: Exception) {
+                println("Error inesperado: ${e.message}")
+                salir = true;
+
+            }
+        }
+    }
 }
+
+
+
+

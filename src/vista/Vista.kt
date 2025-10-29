@@ -14,6 +14,8 @@ class Vista (private val scanner: Scanner, private val listaSeus: MutableList<Se
         println("C: Eliminar trabajador")
         println("D: Pagar a un trabajador")
         println("E: Alta de un seu")
+        println("G: Mirar seu")
+
         println("S: Salir del programa")
 
 
@@ -51,6 +53,30 @@ class Vista (private val scanner: Scanner, private val listaSeus: MutableList<Se
         }
     }
 
+
+    fun vistaSeu (seu: Seus, treballador: MutableList<Treballador>){
+        var jornada = ""
+        println("Nombre de la seu: "+ seu.nomSeu + "         Ciudad: "+ seu.ubicacio + "          Capacidad: "+ seu.nombreMaxim)
+        for (s in seu.nifsTreballadors){
+            for (t in treballador){
+                if(t.nif == s){
+                    print("NIF: " + t.nif + " - Nombre:" + t.nom + " - Salario base: " + t.salariBase + " - Jornada:")
+                    if (t.jornadaCompleta){
+                        jornada = "Completa"
+
+                    }else{
+                        jornada = "Parcial"
+                    }
+                    print(jornada + " - PENDEIENTE - PENDIENTE ")
+                    println("")
+                    print ("--- Total : "+seu.nifsTreballadors.size + " trebajadores ---")
+                    println("")
+
+                }
+            }
+        }
+
+    }
 
 
 
