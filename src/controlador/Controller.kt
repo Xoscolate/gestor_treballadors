@@ -29,7 +29,10 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
 
             } else if (eleccion == "D") {
                 pagarTreballador()
-            } else {
+            }else if (eleccion == "E") {
+                crearSeu()
+        }
+            else {
                 vista.showMessage("Esa opcion no exsiste")
 
             }
@@ -43,7 +46,7 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
 
     fun altaTreballador() {
         var salir = false
-        while(!salir){
+        while (!salir) {
             try {
                 vista.showMessage("-- Alta de trabajador --")
                 vista.showMessage("")
@@ -65,7 +68,7 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
                 if (nif.length != 9) {
                     throw exceptions("El nif no es correcto.")
 
-                } else if(!validarNif(nif)){
+                } else if (!validarNif(nif)) {
                     throw exceptions("Ya exsiste un trbajador con este nif")
 
                 }
@@ -74,7 +77,7 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
                 vista.showMessage("Salario: ")
                 val salarioBaseInput = vista.strings()
                 val salarioBase = salarioBaseInput.toDoubleOrNull()
-                if(salarioBase == null){
+                if (salarioBase == null) {
                     throw exceptions("salario invalido")
                 }
 
@@ -98,20 +101,18 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
                 vista.listaDeSeus()
                 val seu = vista.strings().lowercase()
 
-                if(!exsisteSeu(seu)){
+                if (!exsisteSeu(seu)) {
                     throw exceptions("Ese seu no exsiste")
                 }
 
-                if(cantidadSeus(seu)){
+                if (cantidadSeus(seu)) {
                     throw exceptions("El seu esta completa")
                 }
 
 
-
-
                 val treballador = Treballador(nom, apellido, nif, salarioBase, jornada)
-                for(s in llistaSeus){
-                    if (s.nomSeu== seu){
+                for (s in llistaSeus) {
+                    if (s.nomSeu == seu) {
                         s.nifsTreballadors.add(nif)
                     }
                 }
@@ -120,19 +121,13 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
                 salir = true
 
 
-
-
-
-
-
-
             } catch (e: exceptions) {
                 println("Error de datos: ${e.message}")
                 println("Desea reiniciar la alta del trabajador? ")
                 val respuesta = scanner.nextLine().lowercase()
-                if (respuesta == "si"){
+                if (respuesta == "si") {
                     salir = false
-                }else{
+                } else {
                     println("saliendo...")
                     salir = true
                 }
@@ -143,13 +138,12 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
         }
 
 
-
     }
 
-    fun validarNif (nif : String) : Boolean{
+    fun validarNif(nif: String): Boolean {
         var exsiste = true
-        for (t in treballadors){
-            if (t.nif == nif){
+        for (t in treballadors) {
+            if (t.nif == nif) {
                 exsiste = false
             }
         }
@@ -157,14 +151,15 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
         return exsiste
     }
 
-    fun mismoNif (nif : String): Boolean {
-        for (t in treballadors){
-            if (t.nif == nif){
+    fun mismoNif(nif: String): Boolean {
+        for (t in treballadors) {
+            if (t.nif == nif) {
                 return true
             }
         }
         return false
     }
+
     fun cogerTrabajador(nif: String): Treballador {
         for (t in treballadors) {
             if (t.nif == nif) {
@@ -173,10 +168,6 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
         }
         throw exceptions("No se encontró ningún trabajador con ese NIF.")
     }
-
-
-
-
 
 
     fun modificarTrabajador() {
@@ -201,9 +192,9 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
                     val trabajadorModifcar = cogerTrabajador(nif)
 
                     vista.showMessage("Que desea modificar:")
-                    vista.showMessage("1:Nombre / 2: Apellido / 3:Nif / 4:Salario Base / 5: Jornada : ")
+                    vista.showMessage("1:Nombre / 2: Apellido / 3:Nif / 4:Salario Base / 5: Jornada / 6: Cambiar de seu ")
                     val eleccion = vista.strings()
-                    if (eleccion != "1" && eleccion != "2" && eleccion != "3" && eleccion != "4" && eleccion != "5") {
+                    if (eleccion != "1" && eleccion != "2" && eleccion != "3" && eleccion != "4" && eleccion != "5" && eleccion != "6") {
                         throw exceptions("No exsiste esa opcion")
                     } else if (eleccion == "1") { //Actualizacion del nombre
                         vista.showMessage("Nuevo nombre (no dejar vacio): ")
@@ -259,7 +250,7 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
                         }
 
 
-                    } else {
+                    } else if (eleccion == "5") {
                         var tipoJornada = trabajadorModifcar.jornadaCompleta
                         var jornadaReal = ""
                         if (!tipoJornada) {
@@ -280,6 +271,40 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
                             trabajadorModifcar.jornadaCompleta = tipoJornada
                         }
 
+                    }else if (eleccion == "6"){
+                        var nombreSeu = buscarPorSeu(nif)
+                        vista.showMessage("Actualmente esta en: "+nombreSeu)
+                        vista.showMessage("Desea cambiarlo?")
+                        var respuesta = vista.strings()
+                        if ( respuesta != "si" && respuesta != "no") {
+                            throw exceptions("La respuesta solo puede ser si o no")
+                        } else if (respuesta == "si") {
+                            vista.showMessage("")
+                            vista.showMessage("Lista de seus")
+                            vista.listaDeSeus()
+                            vista.showMessage("")
+                            vista.showMessage("Dime cual quieres cambiar (indicar por el nombre):")
+                            var nombreSeu = vista.strings()
+                            if(!exsisteSeu(nombreSeu)){
+                                throw exceptions("Ese seu no exsiste actualmente")
+                            }
+                            if(cantidadSeus(nombreSeu)){
+                                throw exceptions("Ahora mimso el seu esta completo")
+                            }
+
+                            eliminarTreballadorSeu(nif)
+                            for (s in llistaSeus) {
+                                if (s.nomSeu == nombreSeu) {
+                                    s.nifsTreballadors.add(nif)
+                                }
+                            }
+
+                            vista.showMessage("")
+                            vista.showMessage("Creado correctamente")
+
+                        }else{
+                            vista.showMessage("")
+                        }
                     }
                     vista.showMessage("Desea seguir modificando a los trabajadores")
                     var respuesta = vista.strings().lowercase()
@@ -313,56 +338,61 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
 
     }
 
-    fun exsistenTrabajadores () : Boolean{
+    fun exsistenTrabajadores(): Boolean {
         var exsisteTrabajador = true
-        if(treballadors.isEmpty()){
+        if (treballadors.isEmpty()) {
             exsisteTrabajador = false
         }
         return exsisteTrabajador
     }
 
-    fun exsisteSeu (nombre : String) : Boolean{
-        var exsiste = false
-        for (s in llistaSeus){
-            if (s.nomSeu == nombre){
-                exsiste = true
-            }
-        }
-        return exsiste
 
-    }
 
-    fun cantidadSeus(seu : String) : Boolean{
+    fun cantidadSeus(seu: String): Boolean {
         var cantidad = 0
         var completo = false
-        for (s in llistaSeus){
-            if (s.nomSeu == seu){
+        for (s in llistaSeus) {
+            if (s.nomSeu == seu) {
                 cantidad = s.nombreMaxim
                 val ocupado = s.nifsTreballadors.size
-                if (ocupado >= cantidad){
+                if (ocupado >= cantidad) {
                     completo = true
                 }
 
             }
         }
-return completo
+        return completo
     }
 
-    fun eliminarTreballadorSeu(nif : String){
-        for(s in llistaSeus){
-            for(n in s.nifsTreballadors){
-                if(n==nif){
+    fun eliminarTreballadorSeu(nif: String) {
+        for (s in llistaSeus) {
+            val copia = s.nifsTreballadors.toList()
+            for (n in copia) {
+                if (n == nif) {
                     s.nifsTreballadors.remove(n)
-
                 }
             }
-
         }
     }
 
 
 
-    fun despatxarTreballador (){
+    fun buscarPorSeu (nif : String) : String{
+        var nombreSeu = ""
+        for (s in llistaSeus) {
+            for (n in s.nifsTreballadors) {
+                if (n == nif) {
+                    nombreSeu = s.nomSeu
+
+                }
+            }
+
+        }
+        return nombreSeu
+    }
+
+
+    fun despatxarTreballador() {
         vista.showMessage("-- Eliminar Trabajador --")
         var salir = false
         while (!salir) {
@@ -386,12 +416,10 @@ return completo
                     salir = true
 
 
-
-
                 }
 
 
-            }catch (e: exceptions) {
+            } catch (e: exceptions) {
                 println("Error de datos: ${e.message}")
                 println("Desea reiniciar la modificacion del trabajador? ")
                 val respuesta = scanner.nextLine().lowercase()
@@ -407,14 +435,136 @@ return completo
             }
         }
     }
-    fun eliminacionNif(nif : String) {
+
+    fun eliminacionNif(nif: String) {
         for (i in treballadors.indices) {
             if (treballadors[i].nif == nif) {
                 treballadors.removeAt(i)
 
-            }else{
+            } else {
                 throw exceptions("No se elimino Nif.")
             }
+        }
+    }
+
+    fun pagarTreballador() {
+        vista.showMessage("-- Pagar Trabajador --")
+        var salir = false
+        while (!salir) {
+            try {
+                if (!exsistenTrabajadores()) {
+                    vista.showMessage("No hay trabajadores ahora mismo")
+                    salir = true
+
+                } else {
+                    vista.listaTrabajadores()
+                    vista.showMessage("Escoge cual a quien quieres pagar (pon su nif) : ")
+                    val nif = vista.strings()
+                    var exsisteNif =
+                        mismoNif(nif)
+                    if (!exsisteNif) {
+                        throw exceptions("Ese nif no exsiste en nuestra base de datos")
+                    }
+                    val trabajadorPagar = cogerTrabajador(nif)
+                    var tipoJornada = trabajadorPagar.jornadaCompleta
+                    var salario = trabajadorPagar.salariBase
+                    if (tipoJornada == true) {
+                        vista.showMessage("El pago a " + trabajadorPagar.nom + " " + trabajadorPagar.apellido + " Nif: " + trabajadorPagar.nif + "es de:")
+                        vista.showMessage("" + salario)
+                        vista.showMessage(" euros")
+                        salir = true
+
+                    } else {
+                        salario = salario / 2
+                        vista.showMessage("El pago a " + trabajadorPagar.nom + " " + trabajadorPagar.apellido + " Nif: " + trabajadorPagar.nif + "es de:")
+                        vista.showMessage(" " + salario)
+                        vista.showMessage(" euros")
+                        vista.showMessage("")
+                        salir = true
+
+                    }
+
+                }
+            } catch (e: exceptions) {
+                println("Error de datos: ${e.message}")
+                println("Desea reiniciar el pago del trabajador? ")
+                val respuesta = scanner.nextLine().lowercase()
+                if (respuesta == "si") {
+                    salir = false
+                } else {
+                    println("saliendo...")
+                    salir = true
+                }
+            } catch (e: Exception) {
+                println("Error inesperado: ${e.message}")
+                salir = true;
+            }
+        }
+
+
+    }
+
+
+    fun exsisteSeu(nom: String): Boolean {
+        var exsiste = false
+        for (i in llistaSeus) {
+            if (i.nomSeu == nom) {
+                exsiste = true
+            }
+        }
+        return exsiste
+    }
+
+    fun crearSeu() {
+        var salir = false
+        while (!salir) {
+            try {
+                vista.showMessage(" -- Alta de seu --")
+                vista.showMessage("Nombre (no se pueden repetir): ")
+
+                val nom = vista.strings().lowercase()
+                if (exsisteSeu(nom)) {
+                    throw exceptions("Este seu ya exsiste")
+                } else {
+                    vista.showMessage("")
+                    vista.showMessage("Ubicacio: ")
+                    val ubicacion = vista.strings().lowercase()
+                    if (ubicacion.isEmpty()) {
+                        throw exceptions("No puedes no tener ubicacion")
+                    }
+                    vista.showMessage("")
+                    vista.showMessage("Cantidad (número decimal): ")
+                    val cantidadInput = vista.strings()
+                    val cantidad = cantidadInput.toIntOrNull()
+                    if (cantidad == null) {
+                        throw exceptions("No puede no tener cantidad")
+                    }
+
+                    val seus = Seus(nom, ubicacion, cantidad)
+                    llistaSeus.add(seus)
+                    vista.showMessage("Seu registrado")
+                    vista.showMessage("")
+                    vista.showMessage("")
+                    salir = true
+
+                }
+            } catch (e: exceptions) {
+                println("Error de datos: ${e.message}")
+                println("Desea reiniciar la alta del seu? ")
+                val respuesta = scanner.nextLine().lowercase()
+                if (respuesta == "si") {
+                    salir = false
+                } else {
+                    println("saliendo...")
+                    salir = true
+                }
+            } catch (e: Exception) {
+                println("Error inesperado: ${e.message}")
+                salir = true;
+
+            }
+
+
         }
     }
 

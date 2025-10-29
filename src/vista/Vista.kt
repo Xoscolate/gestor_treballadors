@@ -13,7 +13,11 @@ class Vista (private val scanner: Scanner, private val listaSeus: MutableList<Se
         println("B: Modificar trabajador")
         println("C: Eliminar trabajador")
         println("D: Pagar a un trabajador")
-        print("Escoge una de las opciones:")
+        println("E: Alta de un seu")
+        println("S: Salir del programa")
+
+
+        println("Escoge una de las opciones:")
 
     }
     fun showMessage(message: String) {
