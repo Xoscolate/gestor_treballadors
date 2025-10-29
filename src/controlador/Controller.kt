@@ -4,9 +4,9 @@ import exceptions.exceptions
 import models.Seus
 import models.Treballador
 import vista.Vista
+import controlador.NifValidator
 
-
-class Controller (private val treballadors: MutableList<Treballador> = mutableListOf(),   private val llistaSeus: MutableList<Seus>, private val vista: Vista) {
+class Controller (private val treballadors: MutableList<Treballador> = mutableListOf(),   private val llistaSeus: MutableList<Seus>, private val vista: Vista, private val validator: NifValidator) {
 
 
     fun empezar() {
@@ -68,7 +68,7 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
                 if (nif.length != 9) {
                     throw exceptions("El nif no es correcto.")
 
-                } else if (!validarNif(nif)) {
+                } else if (validator.validateNif(nif)) {
                     throw exceptions("Ya exsiste un trbajador con este nif")
 
                 }
