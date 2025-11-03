@@ -1,6 +1,5 @@
 package vista
 
-import controlador.scanner
 import models.Seus
 import models.Treballador
 import java.util.Scanner

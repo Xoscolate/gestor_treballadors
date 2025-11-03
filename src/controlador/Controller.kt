@@ -5,6 +5,11 @@ import models.Seus
 import models.Treballador
 import vista.Vista
 import controlador.NifValidator
+import models.Administratiu
+import models.Directiu
+import models.Tecnic
+import java.util.Scanner
+
 
 class Controller (private val treballadors: MutableList<Treballador> = mutableListOf(),   private val llistaSeus: MutableList<Seus>, private val vista: Vista, private val validator: NifValidator) {
 
@@ -31,7 +36,9 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
                 pagarTreballador()
             } else if (eleccion == "E") {
                 crearSeu()
-            } else if (eleccion == "G") {
+            }else if (eleccion == "F") {
+                reformaSeu()
+            }else if (eleccion == "G") {
                 veureSeu()
             } else {
                 vista.showMessage("Esa opcion no exsiste")
@@ -98,6 +105,8 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
 
                 val jornada: Boolean = jornadaCompleta == "C"  // Completa es true, y P es false
 
+
+
                 vista.showMessage("")
                 vista.listaDeSeus()
                 val seu = vista.strings().lowercase()
@@ -109,23 +118,173 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
                 if (cantidadSeus(seu)) {
                     throw exceptions("El seu esta completa")
                 }
+                vista.showMessage("Escoge el tipo de tecnico: Directiu (D), Administratiu (A), Tecnic(T)")
+                var tipoTecnico = vista.strings().uppercase()
+                if(tipoTecnico != "D" && tipoTecnico != "A" && tipoTecnico!= "T"){
+                    throw exceptions("Solo puede ser D, A o T")
+                }else if(tipoTecnico == "A") {
+                    vista.showMessage("")
+                    vista.showMessage("Dime que tipo de departamento: Compatibilidad (C)/ RRHH (R) / Secretaria (S)")
+                    var tipoDepartament = vista.strings().uppercase()
+                    if (tipoDepartament != "C" && tipoDepartament != "R" && tipoDepartament != "S") {
+
+                    }else if(tipoDepartament == "C"){
+                        val administrativo = Administratiu(nom, apellido, nif, salarioBase, jornada,"Compatibilidad",0)
+                        for (s in llistaSeus) {
+                            if (s.nomSeu == seu) {
+                                s.nifsTreballadors.add(nif)
+
+                            }
+                        }
+                        treballadors.add(administrativo)
+                        vista.showMessage("Trabajador registrado /n")
+                        salir = true
+
+                    }else if (tipoDepartament == "R"){
+                        val administrativo = Administratiu(nom, apellido, nif, salarioBase, jornada,"RRHH",0)
+                        for (s in llistaSeus) {
+                            if (s.nomSeu == seu) {
+                                s.nifsTreballadors.add(nif)
+
+                            }
+                        }
+                        treballadors.add(administrativo)
+                        vista.showMessage("Trabajador registrado /n")
+                        salir = true
+
+                    }else if (tipoDepartament == "S"){
+                        val administrativo = Administratiu(nom, apellido, nif, salarioBase, jornada,"Secretaria",0)
+                        for (s in llistaSeus) {
+                            if (s.nomSeu == seu) {
+                                s.nifsTreballadors.add(nif)
 
 
-                val treballador = Treballador(nom, apellido, nif, salarioBase, jornada)
-                for (s in llistaSeus) {
-                    if (s.nomSeu == seu) {
-                        s.nifsTreballadors.add(nif)
+                            }
+                        }
+                        treballadors.add(administrativo)
+                        vista.showMessage("Trabajador registrado /n")
+                        salir = true
+
                     }
+                }else if (tipoTecnico == "T")
+                {
+                    vista.showMessage("")
+                    vista.showMessage("Dime que tipo de especialidad: Desenvolupament (D)/ Manteniment (M) / Test (T)")
+                    var tipoDepartament = vista.strings().uppercase()
+                    if (tipoDepartament != "D" && tipoDepartament != "M" && tipoDepartament != "T") {
+                        throw exceptions("Solo puede ser D, M, T")
+
+                    }else if(tipoDepartament == "D"){
+                        vista.showMessage("")
+                        vista.showMessage("Puede hacer guardias:")
+                        var puedeHoras = vista.strings().uppercase()
+                        var booleanHoras = false;
+
+                        if(puedeHoras != "SI" && puedeHoras != "NO"){
+                            throw exceptions("TIENE QUE SER SI O NO")
+                        }else if(puedeHoras == "SI"){
+                            booleanHoras = true
+                        }
+
+                        val tecnico = Tecnic(nom, apellido, nif, salarioBase, jornada,"Desenvolupament",booleanHoras)
+                        for (s in llistaSeus) {
+                            if (s.nomSeu == seu) {
+                                s.nifsTreballadors.add(nif)
+
+
+                            }
+                        }
+                        treballadors.add(tecnico)
+                        vista.showMessage("Trabajador registrado /n")
+                        salir = true
+
+                    }else if (tipoDepartament == "M"){
+                        vista.showMessage("")
+                        vista.showMessage("Puede hacer guardias:")
+                        var puedeHoras = vista.strings().uppercase()
+                        var booleanHoras = false;
+
+                        if(puedeHoras != "SI" && puedeHoras != "NO"){
+                            throw exceptions("TIENE QUE SER SI O NO")
+                        }else if(puedeHoras == "SI"){
+                            booleanHoras = true
+                        }
+
+                        val tecnico = Tecnic(nom, apellido, nif, salarioBase, jornada,"Manteniment",booleanHoras)
+                        for (s in llistaSeus) {
+                            if (s.nomSeu == seu) {
+                                s.nifsTreballadors.add(nif)
+
+
+                            }
+                        }
+                        treballadors.add(tecnico)
+                        vista.showMessage("Trabajador registrado /n")
+                        salir = true
+
+                    }else if (tipoDepartament == "T"){
+                        vista.showMessage("")
+                        vista.showMessage("Puede hacer guardias:")
+                        var puedeHoras = vista.strings().uppercase()
+                        var booleanHoras = false;
+
+                        if(puedeHoras != "SI" && puedeHoras != "NO"){
+                            throw exceptions("TIENE QUE SER SI O NO")
+                        }else if(puedeHoras == "SI"){
+                            booleanHoras = true
+                        }
+
+                        val tecnico = Tecnic(nom, apellido, nif, salarioBase, jornada,"Test",booleanHoras)
+                        for (s in llistaSeus) {
+                            if (s.nomSeu == seu) {
+                                s.nifsTreballadors.add(nif)
+
+
+                            }
+                        }
+                        treballadors.add(tecnico)
+                        vista.showMessage("Trabajador registrado /n")
+                        salir = true
+
+                    }
+                }else{
+                    vista.showMessage("")
+                    vista.showMessage("Dime el bonus que tiene el trabajador: ")
+                    var bonus = vista.strings()
+                    val bonusT = bonus.toDoubleOrNull()
+
+
+                    if(bonusT == null){
+                        throw exceptions("El bonus debe ser algo")
+
+                    }else if(bonusT <= 0 || bonusT >= 10000){
+                        throw exceptions ("Tiene que ser menor que 0 o mayor 100000")
+                    }else{
+                        val treballador = Directiu(nom, apellido, nif, salarioBase, jornada,"",bonusT)
+                        for (s in llistaSeus) {
+                            if (s.nomSeu == seu) {
+                                s.nifsTreballadors.add(nif)
+
+
+                            }
+                        }
+                        treballadors.add(treballador)
+                        vista.showMessage("Trabajador registrado /n")
+                        salir = true
+
+                    }
+
                 }
-                treballadors.add(treballador)
-                vista.showMessage("Trabajador registrado /n")
-                salir = true
+
+
+
+
 
 
             } catch (e: exceptions) {
                 println("Error de datos: ${e.message}")
                 println("Desea reiniciar la alta del trabajador? ")
-                val respuesta = scanner.nextLine().lowercase()
+                val respuesta = vista.strings().lowercase()
                 if (respuesta == "si") {
                     salir = false
                 } else {
@@ -220,7 +379,7 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
                         }
                     } else if (eleccion == "3") { // modificacion del nif
                         vista.showMessage("Nuevo Nif : ")
-                        val nuevoNif = scanner.nextLine()
+                        val nuevoNif = vista.strings()
                         if (!validarNif(nuevoNif)) {
                             throw exceptions("ese nif no es correcto")
                         } else {
@@ -323,7 +482,7 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
             } catch (e: exceptions) {
                 println("Error de datos: ${e.message}")
                 println("Desea reiniciar la modificacion del trabajador? ")
-                val respuesta = scanner.nextLine().lowercase()
+                val respuesta = vista.strings().lowercase()
                 if (respuesta == "si") {
                     salir = false
                 } else {
@@ -421,7 +580,7 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
             } catch (e: exceptions) {
                 println("Error de datos: ${e.message}")
                 println("Desea reiniciar la modificacion del trabajador? ")
-                val respuesta = scanner.nextLine().lowercase()
+                val respuesta = vista.strings().lowercase()
                 if (respuesta == "si") {
                     salir = false
                 } else {
@@ -487,7 +646,7 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
             } catch (e: exceptions) {
                 println("Error de datos: ${e.message}")
                 println("Desea reiniciar el pago del trabajador? ")
-                val respuesta = scanner.nextLine().lowercase()
+                val respuesta = vista.strings().lowercase()
                 if (respuesta == "si") {
                     salir = false
                 } else {
@@ -499,6 +658,12 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
                 salir = true;
             }
         }
+
+
+    }
+
+    fun reformaSeu() {
+
 
 
     }
@@ -551,7 +716,7 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
             } catch (e: exceptions) {
                 println("Error de datos: ${e.message}")
                 println("Desea reiniciar la alta del seu? ")
-                val respuesta = scanner.nextLine().lowercase()
+                val respuesta = vista.strings().lowercase()
                 if (respuesta == "si") {
                     salir = false
                 } else {
@@ -623,7 +788,7 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
             } catch (e: exceptions) {
                 println("Error de datos: ${e.message}")
                 println("Desea reiniciar la observacion de seus? ")
-                val respuesta = scanner.nextLine().lowercase()
+                val respuesta = vista.strings().lowercase()
                 if (respuesta == "si") {
                     salir = false
                 } else {

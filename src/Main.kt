@@ -1,9 +1,5 @@
 
 import models.Treballador
-import controlador.altaTreballador
-import controlador.modificarTrabajador
-import controlador.despatxarTreballador
-import controlador.pagarTreballador
 import controlador.Controller
 import controlador.NifValidator
 import models.Seus
