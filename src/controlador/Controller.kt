@@ -695,9 +695,10 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
                     var tipoJornada = trabajadorPagar.jornadaCompleta
                     var salario = trabajadorPagar.salariBase
                     if (tipoJornada == true) {
+
+
                         vista.showMessage("El pago a " + trabajadorPagar.nom + " " + trabajadorPagar.apellido + " Nif: " + trabajadorPagar.nif + "es de:")
-                        vista.showMessage("" + salario)
-                        vista.showMessage(" euros")
+                        vista.showMessage("" + salario + " euros")
                         salir = true
 
                     } else {
@@ -731,7 +732,79 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
     }
 
     fun reformaSeu() {
+        vista.showMessage("-- REFORMAS DE LA SEU --")
+        var salir = false
+        while (!salir) {
+            try {
+                if (!ahiSeu()) {
+                    throw exceptions("No exsisten seus actualmente")
+                }
+                vista.listaDeSeus()
+                vista.showMessage("Escoge la seu que quieres modificar: ")
+                var seu = vista.strings().lowercase()
+                var seuSeleccionada = cogerSeu(seu)
+                if (!exsisteSeu(seu)) {
+                    throw exceptions("No exsiste ese seu")
+                }
 
+                vista.showMessage("Dime que quieres modificar: 1:Nombre / 2:Numero de empleados")
+                var opcion = vista.strings().toIntOrNull()
+                if (opcion != 1 && opcion != 2){
+                    throw exceptions("Solo puede ser 1 o 2")
+                }else if (opcion == 1){
+                    vista.showMessage("Que nombre quieres que tenga")
+                    var nombre = vista.strings().lowercase()
+                    if (nombre == seuSeleccionada.nomSeu){
+                        throw exceptions("No puede ser el mismo nombre")
+
+                    }else if (exsisteSeu(nombre)){
+                        throw exceptions("No puedes cambiar a un nombre ya exsistente")
+                    }
+                    seuSeleccionada.nomSeu = nombre
+                    vista.showMessage("Ya se ha modificado correctamente")
+                    salir = true
+
+                }else if (opcion == 2){
+                    vista.showMessage("Cual quieres que sea el numero de empleados: ")
+                    var numeroEmpleados = vista.strings().toIntOrNull()
+                    if (numeroEmpleados == null){
+                        throw exceptions("No puede no ser un numero")
+                    }
+                    var tamaño =  seuSeleccionada.nifsTreballadors.size
+                    if (tamaño > numeroEmpleados){
+                        throw exceptions("No puede tener un tamaño menor a los empleados que ya hay")
+                    }
+                    seuSeleccionada.nombreMaxim = numeroEmpleados
+                    vista.showMessage("Modificado correctamente")
+                    salir = true
+                }
+
+
+            }catch (e: exceptions) {
+                println("Error de datos: ${e.message}")
+                println("Desea reiniciar la modificacion del seu? ")
+                val respuesta = vista.strings().lowercase()
+                if (respuesta == "si") {
+                    salir = false
+                } else {
+                    println("saliendo...")
+                    salir = true
+                }
+            }  catch (e: exceptions) {
+                println("Error de datos: ${e.message}")
+                println("Desea reiniciar el pago del trabajador? ")
+                val respuesta = vista.strings().lowercase()
+                if (respuesta == "si") {
+                    salir = false
+                } else {
+                    println("saliendo...")
+                    salir = true
+                }
+            } catch (e: Exception) {
+                println("Error inesperado: ${e.message}")
+                salir = true;
+            }
+        }
 
 
     }
@@ -807,6 +880,15 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
             exsisteSeu = false
         }
         return exsisteSeu
+    }
+
+    fun cogerSeu(nombre: String): Seus {
+        for (seu in llistaSeus) {
+            if (seu.nomSeu.equals(nombre, ignoreCase = true)) {
+                return seu
+            }
+        }
+        throw Exception("No se ha encontrado ninguna seu con ese nombre")
     }
 
     fun veureSeu() {

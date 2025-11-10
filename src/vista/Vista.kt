@@ -1,6 +1,10 @@
 package vista
 
+import models.Administratiu
+import models.Directiu
 import models.Seus
+import models.Tecnic
+import models.TipusTreballador
 import models.Treballador
 import java.util.Scanner
 
@@ -13,6 +17,7 @@ class Vista (private val scanner: Scanner, private val listaSeus: MutableList<Se
         println("C: Eliminar trabajador")
         println("D: Pagar a un trabajador")
         println("E: Alta de un seu")
+        println("F: Reformas de un seu")
         println("G: Mirar seu")
 
         println("S: Salir del programa")
@@ -66,7 +71,34 @@ class Vista (private val scanner: Scanner, private val listaSeus: MutableList<Se
                     }else{
                         jornada = "Parcial"
                     }
-                    print(jornada + " - PENDEIENTE - PENDIENTE ")
+                    if(t.tipus == TipusTreballador.ADMINISTRATIU) {
+                        if (t is Administratiu) {
+                            print(jornada + " - Especialidad: " +t.tipus + " - Departament: "+ t.departament + "- Horas extras: "+t.hores_extras)
+                            println("")
+                            print("--- Total : " + seu.nifsTreballadors.size + " trebajadores ---")
+                            println("")
+                        }
+
+                    }else if(t.tipus == TipusTreballador.TECNIC) {
+                        if (t is Tecnic) {
+                            print(jornada + " - Especialidad: " + t.tipus + " - Especialitat: " + t.especialitat)
+                            if (!t.potFerGuardies) {
+
+
+                                print("Guardias: No ")
+                            } else {
+                                print("Guardias: Si ")
+
+                            }
+
+                        }
+                    }else {
+                        if (t is Directiu) {
+                            print(jornada + " - Especialidad: " + t.tipus + " - Area: " + t.area + "- Bonus: " + t.bonus)
+
+                        }
+                    }
+
                     println("")
                     print ("--- Total : "+seu.nifsTreballadors.size + " trebajadores ---")
                     println("")
