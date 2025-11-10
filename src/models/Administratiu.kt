@@ -9,7 +9,6 @@ class Administratiu(
     var departament: String,
     var hores_extras: Int
 ) : Treballador(nom, apellido, nif, salariBase, jornadaCompleta, TipusTreballador.ADMINISTRATIU) {
-    var horesExtres: Int = 0
 }
 
 

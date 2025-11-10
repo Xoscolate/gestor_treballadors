@@ -8,6 +8,7 @@ import controlador.NifValidator
 import models.Administratiu
 import models.Directiu
 import models.Tecnic
+import models.TipusTreballador
 import java.util.Scanner
 
 
@@ -283,7 +284,8 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
 
             } catch (e: exceptions) {
                 println("Error de datos: ${e.message}")
-                println("Desea reiniciar la alta del trabajador? ")
+                println("Desea reiniciar la alta del t" +
+                        "rabajador? ")
                 val respuesta = vista.strings().lowercase()
                 if (respuesta == "si") {
                     salir = false
@@ -352,9 +354,9 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
                     val trabajadorModifcar = cogerTrabajador(nif)
 
                     vista.showMessage("Que desea modificar:")
-                    vista.showMessage("1:Nombre / 2: Apellido / 3:Nif / 4:Salario Base / 5: Jornada / 6: Cambiar de seu ")
+                    vista.showMessage("1:Nombre / 2: Apellido / 3:Nif / 4:Salario Base / 5: Jornada / 6: Cambiar de seu / 7: Horas extras, Bonus o Guardias")
                     val eleccion = vista.strings()
-                    if (eleccion != "1" && eleccion != "2" && eleccion != "3" && eleccion != "4" && eleccion != "5" && eleccion != "6") {
+                    if (eleccion != "1" && eleccion != "2" && eleccion != "3" && eleccion != "4" && eleccion != "5" && eleccion != "6" && eleccion != "7") {
                         throw exceptions("No exsiste esa opcion")
                     } else if (eleccion == "1") { //Actualizacion del nombre
                         vista.showMessage("Nuevo nombre (no dejar vacio): ")
@@ -432,8 +434,8 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
                         }
 
                     } else if (eleccion == "6") {
-                        var nombreSeu = buscarPorSeu(nif)
-                        vista.showMessage("Actualmente esta en: " + nombreSeu)
+                        var nombreSeu2 = buscarPorSeu(nif)
+                        vista.showMessage("Actualmente esta en: " + nombreSeu2)
                         vista.showMessage("Desea cambiarlo?")
                         var respuesta = vista.strings()
                         if (respuesta != "si" && respuesta != "no") {
@@ -447,6 +449,9 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
                             var nombreSeu = vista.strings()
                             if (!exsisteSeu(nombreSeu)) {
                                 throw exceptions("Ese seu no exsiste actualmente")
+                            }
+                            if (nombreSeu.equals(nombreSeu2)){
+                                throw exceptions("Es el mismo seu en el que esta actualmente")
                             }
                             if (cantidadSeus(nombreSeu)) {
                                 throw exceptions("Ahora mimso el seu esta completo")
@@ -462,9 +467,72 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
                             vista.showMessage("")
                             vista.showMessage("Creado correctamente")
 
-                        } else {
+                        }else {
                             vista.showMessage("")
                         }
+                    }else if(eleccion == "7") {
+                        if (trabajadorModifcar.tipus == TipusTreballador.ADMINISTRATIU){
+                            vista.showMessage("Dime cuantas horas extras quieres:")
+                            var horas = vista.strings().toIntOrNull();
+                            if(horas == null){
+                                throw exceptions("Las horas deben ser un numero entero")
+                            }
+                            if (trabajadorModifcar is Administratiu) {
+                                trabajadorModifcar.hores_extras = horas
+                            }
+
+                        }else if (trabajadorModifcar.tipus == TipusTreballador.TECNIC){
+                            if(trabajadorModifcar is Tecnic){
+                                if(! trabajadorModifcar.potFerGuardies){
+                                    vista.showMessage("Quieres que pueda hacer guardias? (Si / No)")
+                                    var respuesta = vista.strings().lowercase()
+                                    if (respuesta != "si" && respuesta != "no") {
+                                        throw exceptions("Solo puede ser si o no")
+                                    }else if (respuesta == "si"){
+                                        trabajadorModifcar.potFerGuardies = true
+                                        vista.showMessage("Se ha modificado perfectamente")
+                                    }else{
+                                        vista.showMessage("No se ha podido modificar")
+                                    }
+
+                                }else{
+                                    vista.showMessage("Quieres que no pueda hacer guardias? (Si / No)")
+                                    var respuesta = vista.strings().lowercase()
+                                    if (respuesta != "si" && respuesta != "no") {
+                                        throw exceptions("Solo puede ser si o no")
+                                    }else if (respuesta == "si"){
+                                        trabajadorModifcar.potFerGuardies = false
+                                        vista.showMessage("Se ha modificado perfectamente")
+                                    }else{
+                                        vista.showMessage("No se ha modificado")
+                                    }
+
+                                }
+                            }
+                        }else{
+                            if(trabajadorModifcar is Directiu){
+                                vista.showMessage("Ahora mismo los bonus son: "+trabajadorModifcar.bonus+ " euros")
+                                vista.showMessage("Desea modificarlo? (Si / No)")
+                                var respuesta = vista.strings().lowercase()
+                                if (respuesta != "si" && respuesta != "no") {
+                                    throw exceptions("Solo puede ser si o no")
+                                }else if (respuesta == "si"){
+
+                                    vista.showMessage("Cual quiere que sea la cantidad (Maximo 10.000): ")
+                                    var dinero = vista.strings().toDoubleOrNull()
+                                    if(dinero == null){
+                                        throw exceptions ("Solo puede ser un numero")
+                                    }
+                                    trabajadorModifcar.bonus = dinero
+                                    vista.showMessage("Se ha modificado correctamente")
+
+                                }else{
+                                    vista.showMessage("No se ha modificado")
+                                }
+                            }
+
+                        }
+
                     }
                     vista.showMessage("Desea seguir modificando a los trabajadores")
                     var respuesta = vista.strings().lowercase()

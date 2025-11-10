@@ -6,8 +6,8 @@ class Directiu(
     nif: String,
     salariBase: Double,
     jornadaCompleta: Boolean,
-    val area: String,
-    val bonus: Double
+    var area: String,
+    var bonus: Double
 ) : Treballador(nom, apellido, nif, salariBase, jornadaCompleta, TipusTreballador.DIRECTIU) {
 
 }
