@@ -74,7 +74,7 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
                 vista.showMessage("Nif: ")
                 val nif = vista.strings().lowercase()
                 var nifExsiste = validarNif(nif)
-                if (nif.length != 9) {
+                if (!nifExsiste) {
                     throw exceptions("El nif no es correcto.")
 
                 } else if (validator.validateNif(nif)) {
@@ -128,7 +128,7 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
                     vista.showMessage("Dime que tipo de departamento: Compatibilidad (C)/ RRHH (R) / Secretaria (S)")
                     var tipoDepartament = vista.strings().uppercase()
                     if (tipoDepartament != "C" && tipoDepartament != "R" && tipoDepartament != "S") {
-
+                        throw exceptions("Solo puede ser C, R o S")
                     }else if(tipoDepartament == "C"){
                         val administrativo = Administratiu(nom, apellido, nif, salarioBase, jornada,"Compatibilidad",0)
                         for (s in llistaSeus) {
@@ -177,7 +177,7 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
 
                     }else if(tipoDepartament == "D"){
                         vista.showMessage("")
-                        vista.showMessage("Puede hacer guardias:")
+                        vista.showMessage("Puede hacer guardias: (SI / NO)")
                         var puedeHoras = vista.strings().uppercase()
                         var booleanHoras = false;
 
@@ -346,7 +346,7 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
                     vista.listaTrabajadores()
 
                     vista.showMessage("Escoge cual quieres modificar (pon su nif) : ")
-                    val nif = vista.strings()
+                    val nif = vista.strings().lowercase()
                     var exsisteNif = mismoNif(nif)
                     if (!exsisteNif) {
                         throw exceptions("Ese nif no exsiste en nuestra base de datos")
@@ -663,13 +663,9 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
     }
 
     fun eliminacionNif(nif: String) {
-        for (i in treballadors.indices) {
-            if (treballadors[i].nif == nif) {
-                treballadors.removeAt(i)
-
-            } else {
-                throw exceptions("No se elimino Nif.")
-            }
+        val removed = treballadors.removeIf { it.nif == nif }
+        if (!removed) {
+            throw exceptions("No se encontró el NIF para eliminar.")
         }
     }
 
@@ -685,50 +681,44 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
                 } else {
                     vista.listaTrabajadores()
                     vista.showMessage("Escoge cual a quien quieres pagar (pon su nif) : ")
-                    val nif = vista.strings()
-                    var exsisteNif =
-                        mismoNif(nif)
+                    val nif = vista.strings().lowercase()
+                    val exsisteNif = mismoNif(nif)
                     if (!exsisteNif) {
                         throw exceptions("Ese nif no exsiste en nuestra base de datos")
                     }
+
                     val trabajadorPagar = cogerTrabajador(nif)
-                    var tipoJornada = trabajadorPagar.jornadaCompleta
                     var salario = trabajadorPagar.salariBase
-                    if (tipoJornada == true) {
 
-
-                        vista.showMessage("El pago a " + trabajadorPagar.nom + " " + trabajadorPagar.apellido + " Nif: " + trabajadorPagar.nif + "es de:")
-                        vista.showMessage("" + salario + " euros")
-                        salir = true
-
-                    } else {
-                        salario = salario / 2
-                        vista.showMessage("El pago a " + trabajadorPagar.nom + " " + trabajadorPagar.apellido + " Nif: " + trabajadorPagar.nif + "es de:")
-                        vista.showMessage(" " + salario)
-                        vista.showMessage(" euros")
-                        vista.showMessage("")
-                        salir = true
-
+                    if (!trabajadorPagar.jornadaCompleta) {
+                        salario /= 2
                     }
 
+                    if (trabajadorPagar is Administratiu) {
+                        salario += trabajadorPagar.hores_extras * 35
+                        trabajadorPagar.hores_extras= 0
+                    } else if (trabajadorPagar is Tecnic) {
+                        if (trabajadorPagar.potFerGuardies) {
+                            salario += 600
+                        }
+                    } else if (trabajadorPagar is Directiu) {
+                        salario += trabajadorPagar.bonus / 12
+                    }
+
+                    vista.showMessage("El pago a " + trabajadorPagar.nom + " " + trabajadorPagar.apellido +" Nif: " + trabajadorPagar.nif + " es de " + salario + " euros")
+                    salir = true
                 }
             } catch (e: exceptions) {
                 println("Error de datos: ${e.message}")
                 println("Desea reiniciar el pago del trabajador? ")
                 val respuesta = vista.strings().lowercase()
-                if (respuesta == "si") {
-                    salir = false
-                } else {
-                    println("saliendo...")
-                    salir = true
-                }
+                salir = respuesta != "si"
+                if (salir) println("saliendo...")
             } catch (e: Exception) {
                 println("Error inesperado: ${e.message}")
-                salir = true;
+                salir = true
             }
         }
-
-
     }
 
     fun reformaSeu() {
@@ -811,15 +801,13 @@ class Controller (private val treballadors: MutableList<Treballador> = mutableLi
 
 
     fun exsisteSeu(nom: String): Boolean {
-        var exsiste = false
         for (i in llistaSeus) {
-            if (i.nomSeu == nom) {
-                exsiste = true
+            if (i.nomSeu.equals(nom, ignoreCase = true)) {
+                return true
             }
         }
-        return exsiste
+        return false
     }
-
 
     fun crearSeu() {
         var salir = false

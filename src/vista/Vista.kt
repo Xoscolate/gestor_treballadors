@@ -11,7 +11,7 @@ import java.util.Scanner
 
 class Vista (private val scanner: Scanner, private val listaSeus: MutableList<Seus>, private val listaTrabajadors: MutableList<Treballador>){
     fun Menu(){
-        println("-- Gestor de trbajadores: Tech Nova Solutions --")
+        println("-- Gestor de trabajadores: Tech Nova Solutions --")
         println("A: Alta del trabajador")
         println("B: Modificar trabajador")
         println("C: Eliminar trabajador")
